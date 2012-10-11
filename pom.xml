@@ -181,8 +181,8 @@
     </dependencies>
 
     <scm>
-        <connection>scm:git:git@github.com:jbossas/jboss-ejb-client.git</connection>
-        <developerConnection>scm:git:git@github.com:jbossas/jboss-ejb-client.git</developerConnection>
-        <url>https://github.com/jbossas/jboss-ejb-client</url>
+        <connection>scm:git:git@github.com:seeburger-ag/jboss-ejb-client.git</connection>
+        <developerConnection>scm:git:git@github.com:seeburger-ag/jboss-ejb-client.git</developerConnection>
+        <url>https://github.com/seeburger-ag/jboss-ejb-client</url>
     </scm>
 </project>
