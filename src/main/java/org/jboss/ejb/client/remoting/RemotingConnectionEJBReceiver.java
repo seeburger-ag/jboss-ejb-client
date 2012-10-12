@@ -165,8 +165,12 @@ public final class RemotingConnectionEJBReceiver extends EJBReceiver {
                 logger.info("Version handshake not completed for receiver context " + context + " by receiver " + this + " . Closing the receiver context");
                 context.close();
                 if( this.reconnectHandler != null ){
-                    logger.info("Adding reconnect handler to client context " + context.getClientContext());
-                    context.getClientContext().registerReconnectHandler(this.reconnectHandler);
+                    //only add the reconnect handler if the version handshake did not fail due to an incompatibility
+                    // (latch is not be counted down on failure)
+                    if( ! versionReceiver.failedCompatibility() ){
+                        logger.info("Adding reconnect handler to client context " + context.getClientContext());
+                        context.getClientContext().registerReconnectHandler(this.reconnectHandler);
+                    }
                 }
             }
         } catch (InterruptedException e) {
