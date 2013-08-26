@@ -47,16 +47,32 @@ import org.jboss.marshalling.Unmarshaller;
 class AbstractMessageWriter {
 
     protected void writeAttachments(final ObjectOutput output, final EJBClientInvocationContext invocationContext) throws IOException {
+        // we write out the private (a.k.a JBoss specific) attachments as well as public invocation context data
+        // (a.k.a user application specific data)
+        final Map<Object, Object> privateAttachments = invocationContext.getAttachments();
         final Map<String, Object> contextData = invocationContext.getContextData();
-        if (contextData == null) {
+        // no private or public data to write out
+        if (contextData == null && privateAttachments.isEmpty()) {
             output.writeByte(0);
             return;
         }
-        // write the attachment count
-        PackedInteger.writePackedInteger(output, contextData.size());
-        for (Map.Entry<String, Object> entry : contextData.entrySet()) {
-            output.writeObject(entry.getKey());
-            output.writeObject(entry.getValue());
+        // write the attachment count which is the sum of invocation context data + 1 (since we write
+        // out the private attachments under a single key with the value being the entire attachment map)
+        int totalAttachments = contextData.size();
+        if (!privateAttachments.isEmpty()) {
+            totalAttachments++;
+        }
+        PackedInteger.writePackedInteger(output, totalAttachments);
+        // write out public (application specific) context data
+        for (Map.Entry<String, Object> invocationContextData : contextData.entrySet()) {
+            output.writeObject(invocationContextData.getKey());
+            output.writeObject(invocationContextData.getValue());
+        }
+        if (!privateAttachments.isEmpty()) {
+            // now write out the JBoss specific attachments under a single key and the value will be the
+            // entire map of JBoss specific attachments
+            output.writeObject(EJBClientInvocationContext.PRIVATE_ATTACHMENTS_KEY);
+            output.writeObject(privateAttachments);
         }
     }
 
