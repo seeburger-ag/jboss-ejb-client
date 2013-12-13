@@ -838,12 +838,13 @@ public final class EJBClientContext extends Attachable {
 
     private synchronized void attemptReconnections() {
         final CountDownLatch reconnectTasksCompletionNotifierLatch;
-        if (this.reconnectHandlers.isEmpty()) {
+        final List<ReconnectHandler> reconnectHandlersToAttempt = new ArrayList<ReconnectHandler>(this.reconnectHandlers);
+        if (reconnectHandlersToAttempt.isEmpty()) {
             // no reconnections to attempt just return
             return;
         }
-        reconnectTasksCompletionNotifierLatch = new CountDownLatch(this.reconnectHandlers.size());
-        for (final ReconnectHandler reconnectHandler : this.reconnectHandlers) {
+        reconnectTasksCompletionNotifierLatch = new CountDownLatch(reconnectHandlersToAttempt.size());
+        for (final ReconnectHandler reconnectHandler : reconnectHandlersToAttempt) {
             // submit each of the reconnection tasks
             this.reconnectionExecutorService.submit(new ReconnectAttempt(reconnectHandler, reconnectTasksCompletionNotifierLatch));
         }
