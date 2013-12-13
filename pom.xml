@@ -33,7 +33,7 @@
 
     <groupId>com.seeburger.as</groupId>
     <artifactId>jboss-ejb-client</artifactId>
-    <version>1.0.5.SEE4-SNAPSHOT</version>
+    <version>1.0.5.SEE4</version>
 
     <name>JBoss EJB client</name>
     <description>Client library for EJB applications working against JBoss AS</description>
